@@ -1,0 +1,6 @@
+app:
+  AccessKey: # Aliyun AccessKey
+  AccessSecret: # Aliyun AccessSecret
+  BucketEndPoint: # Aliyun OSS BucketEndPoint
+  BucketName: # BucketName
+  RequestKey: # Admin Manual Operation Key
