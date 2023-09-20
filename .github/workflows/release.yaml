@@ -1,25 +1,25 @@
 name: Release
 on:
-  create:
-    tags:
-      - v*
+  release:
+    types: [created] # 表示在创建新的 Release 时触发
 
 jobs:
-  release:
-    name: Release on GitHub
+  build-go-binary:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin] # 需要打包的系统
+        goarch: [amd64, arm64] # 需要打包的架构
+        exclude: # 排除某些平台和架构
+          - goarch: arm64
+            goos: windows
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Validates GO releaser config
-        uses: docker://goreleaser/goreleaser:latest
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1.30
         with:
-          args: check
-
-      - name: Create release on GitHub
-        uses: docker://goreleaser/goreleaser:latest
-        with:
-          args: release
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          github_token: ${{ secrets.GITHUB_TOKEN }} # 一个默认的变量，用来实现往 Release 中添加文件
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: 1.20
+          binary_name: "OssAlertTools" # 可以指定二进制文件的名称
+          extra_files: README.md config.dev.json # 需要包含的额外文件
